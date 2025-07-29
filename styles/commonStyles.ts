@@ -1,20 +1,20 @@
 import { StyleSheet, ViewStyle, TextStyle } from 'react-native';
 
 export const colors = {
-  primary: '#2E7D32',      // Green for barber theme
-  secondary: '#4CAF50',    // Lighter green
-  accent: '#81C784',       // Light green accent
-  background: '#FAFAFA',   // Light gray background
+  primary: '#8B4513',      // SaddleBrown for a rich, elegant feel
+  secondary: '#DAA520',    // GoldenRod for a warm, secondary color
+  accent: '#F5DEB3',       // Wheat for a light, creamy accent
+  background: '#FDF5E6',   // OldLace for a warm, off-white background
   backgroundAlt: '#FFFFFF', // White background
-  text: '#212121',         // Dark text
-  textSecondary: '#757575', // Gray text
-  grey: '#E0E0E0',         // Light gray
+  text: '#3A3A3A',         // Dark, warm gray for text
+  textSecondary: '#6B4F4F', // A softer, brown-toned gray for secondary text
+  grey: '#D2B48C',         // Tan for a warm gray alternative
   card: '#FFFFFF',         // White card background
-  success: '#4CAF50',      // Success green
-  warning: '#FF9800',      // Warning orange
-  error: '#F44336',        // Error red
-  available: '#E8F5E8',    // Light green for available slots
-  occupied: '#FFEBEE',     // Light red for occupied slots
+  success: '#228B22',      // ForestGreen for a classic success color
+  warning: '#FF8C00',      // DarkOrange for a vibrant warning
+  error: '#B22222',        // Firebrick for a strong error color
+  available: '#F5F5DC',    // Beige for available slots, warm and neutral
+  occupied: '#FFE4E1',     // MistyRose for occupied slots, a soft, warm red
 };
 
 export const buttonStyles = StyleSheet.create({
