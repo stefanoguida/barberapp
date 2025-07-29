@@ -2,7 +2,7 @@ import { Text, View, ScrollView, TouchableOpacity, Alert, Image } from 'react-na
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Button from '../../../components/Button';
+import Button from '../../../../components/Button';
 import Icon from '../../../components/Icon';
 import { commonStyles, buttonStyles, colors } from '../../../styles/commonStyles';
 
