@@ -2,9 +2,9 @@ import { Text, View, ScrollView, TouchableOpacity, Alert, Image } from 'react-na
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Button from '../../../components/Button';
-import Icon from '../../../components/Icon';
-import { commonStyles, buttonStyles, colors } from '../../../styles/commonStyles';
+import Button from '../../../../components/Button';
+import Icon from '../../../../components/Icon';
+import { commonStyles, buttonStyles, colors } from '../../../../styles/commonStyles';
 
 interface TimeSlot {
   time: string;
@@ -221,7 +221,7 @@ export default function BookingScreen() {
           </TouchableOpacity>
           <View style={[commonStyles.row, { alignItems: 'center' }]}>
             <Image 
-              source={require('../../../assets/images/final_quest_240x240.png')} 
+              source={require('../../../../assets/images/final_quest_240x240.png')}
               style={{ width: 24, height: 24, marginRight: 8 }}
               resizeMode="contain"
             />
@@ -250,7 +250,7 @@ export default function BookingScreen() {
         <View style={commonStyles.card}>
           <View style={[commonStyles.row, { alignItems: 'center' }]}>
             <Image 
-              source={require('../../../assets/images/final_quest_240x240__.png')} 
+              source={require('../../../../assets/images/final_quest_240x240__.png')}
               style={{ width: 40, height: 40, marginRight: 12, borderRadius: 20 }}
               resizeMode="contain"
             />
