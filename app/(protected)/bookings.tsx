@@ -336,11 +336,16 @@ export default function BookingsScreen() {
               </View>
             )}
 
+            {/* Separator */}
+            {upcomingBookings.length > 0 && pastBookings.length > 0 && (
+              <View style={{ borderBottomColor: colors.grey, borderBottomWidth: 1, marginVertical: 24 }} />
+            )}
+
             {/* Past Bookings */}
-            {pastBookings.length > 0 && (
-              <View style={commonStyles.section}>
-                <Text style={commonStyles.subtitle}>Storico</Text>
-                {pastBookings.map((booking) => (
+            <View style={commonStyles.section}>
+              <Text style={commonStyles.subtitle}>Appuntamenti Passati</Text>
+              {pastBookings.length > 0 ? (
+                pastBookings.map((booking) => (
                   <View key={booking.id} style={[commonStyles.card, { opacity: 0.7 }]}>
                     <View style={[commonStyles.row, commonStyles.spaceBetween, { marginBottom: 8 }]}>
                       <Text style={commonStyles.text}>{booking.barberName}</Text>
@@ -367,9 +372,13 @@ export default function BookingsScreen() {
                       </Text>
                     </View>
                   </View>
-                ))}
-              </View>
-            )}
+                ))
+              ) : (
+                <View style={[commonStyles.center, { marginTop: 20 }]}>
+                  <Text style={commonStyles.textSecondary}>Non hai appuntamenti passati.</Text>
+                </View>
+              )}
+            </View>
           </>
         )}
       </View>
