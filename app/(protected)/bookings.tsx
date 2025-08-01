@@ -2,9 +2,9 @@ import { Text, View, ScrollView, TouchableOpacity, Alert, Image } from 'react-na
 import { router, useFocusEffect } from 'expo-router';
 import { useState, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Button from '../components/Button';
-import Icon from '../components/Icon';
-import { commonStyles, buttonStyles, colors } from '../styles/commonStyles';
+import Button from '../../components/Button';
+import Icon from '../../components/Icon';
+import { commonStyles, buttonStyles, colors } from '../../styles/commonStyles';
 
 interface BookingData {
   id: string;
@@ -205,7 +205,7 @@ export default function BookingsScreen() {
     return (
       <View style={[commonStyles.container, commonStyles.center]}>
         <Image 
-          source={require('../assets/images/final_quest_240x240.png')} 
+          source={require('../../assets/images/final_quest_240x240.png')}
           style={{ width: 60, height: 60, marginBottom: 16 }}
           resizeMode="contain"
         />
@@ -223,7 +223,7 @@ export default function BookingsScreen() {
           </TouchableOpacity>
           <View style={[commonStyles.row, { alignItems: 'center' }]}>
             <Image 
-              source={require('../assets/images/final_quest_240x240.png')} 
+              source={require('../../assets/images/final_quest_240x240.png')}
               style={{ width: 24, height: 24, marginRight: 8 }}
               resizeMode="contain"
             />
@@ -237,7 +237,7 @@ export default function BookingsScreen() {
         {bookings.length === 0 ? (
           <View style={[commonStyles.center, { marginTop: 50 }]}>
             <Image 
-              source={require('../assets/images/final_quest_240x240.png')} 
+              source={require('../../assets/images/final_quest_240x240.png')}
               style={{ width: 120, height: 120, marginBottom: 24 }}
               resizeMode="contain"
             />

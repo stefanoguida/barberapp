@@ -1,9 +1,9 @@
 import { Text, View, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState, useEffect } from 'react';
-import Icon from '../../components/Icon';
-import { commonStyles, buttonStyles, colors } from '../../styles/commonStyles';
-import Button from '../../components/Button';
+import Icon from '../../../components/Icon';
+import { commonStyles, buttonStyles, colors } from '../../../styles/commonStyles';
+import Button from '../../../components/Button';
 
 interface BarberDetails {
   id: string;
@@ -99,7 +99,7 @@ export default function BarberDetailScreen() {
     return (
       <View style={[commonStyles.container, commonStyles.center]}>
         <Image 
-          source={require('../../assets/images/final_quest_240x240.png')} 
+          source={require('../../../assets/images/final_quest_240x240.png')}
           style={{ width: 60, height: 60, marginBottom: 16 }}
           resizeMode="contain"
         />
@@ -131,7 +131,7 @@ export default function BarberDetailScreen() {
           </TouchableOpacity>
           <View style={[commonStyles.row, { alignItems: 'center' }]}>
             <Image 
-              source={require('../../assets/images/final_quest_240x240.png')} 
+              source={require('../../../assets/images/final_quest_240x240.png')}
               style={{ width: 24, height: 24, marginRight: 8 }}
               resizeMode="contain"
             />
@@ -146,7 +146,7 @@ export default function BarberDetailScreen() {
         <View style={commonStyles.card}>
           <View style={[commonStyles.row, { alignItems: 'center', marginBottom: 12 }]}>
             <Image 
-              source={require('../../assets/images/final_quest_240x240__.png')} 
+              source={require('../../../assets/images/final_quest_240x240__.png')}
               style={{ width: 60, height: 60, marginRight: 16, borderRadius: 30 }}
               resizeMode="contain"
             />
@@ -226,7 +226,7 @@ export default function BarberDetailScreen() {
             >
               <View style={[commonStyles.row, { alignItems: 'center' }]}>
                 <Image 
-                  source={require('../../assets/images/final_quest_240x240__.png')} 
+                  source={require('../../../assets/images/final_quest_240x240__.png')}
                   style={{ width: 50, height: 50, marginRight: 12, borderRadius: 25 }}
                   resizeMode="contain"
                 />
