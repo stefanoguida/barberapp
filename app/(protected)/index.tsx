@@ -1,9 +1,9 @@
 import { Text, View, ScrollView, Image } from 'react-native';
 import { router } from 'expo-router';
 import { useState, useEffect } from 'react';
-import Button from '../components/Button';
-import Icon from '../components/Icon';
-import { commonStyles, buttonStyles, colors } from '../styles/commonStyles';
+import Button from '../../components/Button';
+import Icon from '../../components/Icon';
+import { commonStyles, buttonStyles, colors } from '../../styles/commonStyles';
 
 export default function HomeScreen() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -41,7 +41,7 @@ export default function HomeScreen() {
         <View style={[commonStyles.card, { backgroundColor: colors.primary + '10', borderColor: colors.primary, borderWidth: 1, marginBottom: 24 }]}>
           <View style={[commonStyles.row, { alignItems: 'center' }]}>
             <Image
-              source={require('../assets/images/final_quest_240x240__.png')}
+              source={require('../../assets/images/final_quest_240x240__.png')}
               style={{ width: 40, height: 40, marginRight: 12 }}
               resizeMode="contain"
             />
@@ -123,7 +123,7 @@ export default function HomeScreen() {
         {/* Call to Action */}
         <View style={[commonStyles.center, { marginTop: 32, marginBottom: 32 }]}>
           <Image
-            source={require('../assets/images/natively-dark.png')}
+            source={require('../../assets/images/natively-dark.png')}
             style={{ width: 80, height: 80, marginBottom: 16, opacity: 0.7 }}
             resizeMode="contain"
           />
