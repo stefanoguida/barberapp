@@ -25,6 +25,8 @@ const mockReviews = [
 
 export default function BarberDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
   // Mock data, in a real app this would be fetched from an API
   const barber = {
     id: '1',
@@ -44,7 +46,12 @@ export default function BarberDetailScreen() {
   };
 
   const handleBookNow = () => {
-    router.push(`/booking/${id}/${barber.staff[0].id}`);
+    if (selectedService && selectedTime) {
+      router.push({
+        pathname: `/booking/${id}/${barber.staff[0].id}`,
+        params: { service: selectedService, time: selectedTime, date: new Date().toISOString().split('T')[0] },
+      });
+    }
   };
 
   return (
@@ -67,13 +74,44 @@ export default function BarberDetailScreen() {
           <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 8 }}>Services</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
             {barber.services.map((service) => (
-              <View key={service} style={{ backgroundColor: '#f0f2f5', borderRadius: 12, paddingVertical: 8, paddingHorizontal: 12 }}>
-                <Text style={{ fontSize: 14, fontWeight: '500' }}>{service}</Text>
-              </View>
+              <TouchableOpacity
+                key={service}
+                style={{
+                  backgroundColor: selectedService === service ? '#0c7ff2' : '#f0f2f5',
+                  borderRadius: 12,
+                  paddingVertical: 8,
+                  paddingHorizontal: 12,
+                }}
+                onPress={() => setSelectedService(service)}
+              >
+                <Text style={{ fontSize: 14, fontWeight: '500', color: selectedService === service ? 'white' : 'black' }}>{service}</Text>
+              </TouchableOpacity>
             ))}
           </View>
 
-          <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 8 }}>Reviews</Text>
+          {selectedService && (
+            <View>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', marginVertical: 16 }}>Available Times</Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                {['10:00', '11:00', '12:00', '14:00', '15:00', '16:00'].map((time) => (
+                  <TouchableOpacity
+                    key={time}
+                    style={{
+                      backgroundColor: selectedTime === time ? '#0c7ff2' : '#f0f2f5',
+                      borderRadius: 12,
+                      paddingVertical: 8,
+                      paddingHorizontal: 12,
+                    }}
+                    onPress={() => setSelectedTime(time)}
+                  >
+                    <Text style={{ fontSize: 14, fontWeight: '500', color: selectedTime === time ? 'white' : 'black' }}>{time}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          )}
+
+          <Text style={{ fontSize: 20, fontWeight: 'bold', marginVertical: 16 }}>Reviews</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
             <Text style={{ fontSize: 36, fontWeight: '900', marginRight: 8 }}>{barber.rating}</Text>
             <View>
@@ -120,6 +158,7 @@ export default function BarberDetailScreen() {
         <Button
           text="Book Now"
           onPress={handleBookNow}
+          disabled={!selectedService || !selectedTime}
         />
       </View>
     </View>
