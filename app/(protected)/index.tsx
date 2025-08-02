@@ -1,9 +1,50 @@
-import { Text, View, TextInput, ScrollView, TouchableOpacity } from 'react-native';
+import { Text, View, TextInput, ScrollView, TouchableOpacity, FlatList } from 'react-native';
+import { useState, useEffect } from 'react';
 import Icon from '../../components/Icon';
 import MapWrapper from '../../components/MapWrapper';
 import BottomNavBar from '../../components/BottomNavBar';
+import BarberListItem from '../../components/BarberListItem';
+
+const mockBarbers = [
+  { id: '1', name: 'Barbiere Centrale', address: 'Via Roma 123, Milano', rating: 4.5, distance: 0.5, lat: 45.4642, lng: 9.1900 },
+  { id: '2', name: 'Style & Cut', address: 'Corso Buenos Aires 45, Milano', rating: 4.8, distance: 1.2, lat: 45.4781, lng: 9.2100 },
+  { id: '3', name: 'Gentleman Barber', address: 'Via Brera 78, Milano', rating: 4.2, distance: 2.5, lat: 45.4722, lng: 9.1856 },
+  { id: '4', name: 'The Barber Shop', address: 'Piazza Duomo 1, Milano', rating: 4.9, distance: 0.2, lat: 45.4646, lng: 9.1916 },
+];
+
+const userLocation = { lat: 45.4642, lng: 9.1900 }; // Mock user location (Duomo di Milano)
+
+const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+  const R = 6371; // Radius of the earth in km
+  const dLat = deg2rad(lat2 - lat1);
+  const dLon = deg2rad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2)
+    ;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const d = R * c; // Distance in km
+  return d;
+}
+
+const deg2rad = (deg: number) => {
+  return deg * (Math.PI / 180)
+}
+
 
 export default function HomeScreen() {
+  const [nearbyBarbers, setNearbyBarbers] = useState<any[]>([]);
+
+  useEffect(() => {
+    const barbersWithDistance = mockBarbers.map(barber => ({
+      ...barber,
+      distance: getDistance(userLocation.lat, userLocation.lng, barber.lat, barber.lng)
+    }));
+    const filteredBarbers = barbersWithDistance.filter(barber => barber.distance <= 2);
+    setNearbyBarbers(filteredBarbers);
+  }, []);
+
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       <View style={{ padding: 16 }}>
@@ -31,20 +72,14 @@ export default function HomeScreen() {
       </View>
       <View style={{ flex: 1 }}>
         <MapWrapper />
-        <View style={{ position: 'absolute', bottom: 100, right: 16, gap: 8 }}>
-          <TouchableOpacity style={{ backgroundColor: 'white', borderRadius: 12, padding: 12, elevation: 3, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4 }}>
-            <Icon name="add" size={24} color="#111418" />
-          </TouchableOpacity>
-          <TouchableOpacity style={{ backgroundColor: 'white', borderRadius: 12, padding: 12, elevation: 3, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4 }}>
-            <Icon name="remove" size={24} color="#111418" />
-          </TouchableOpacity>
-        </View>
-        <TouchableOpacity style={{ position: 'absolute', bottom: 180, right: 16, backgroundColor: 'white', borderRadius: 12, padding: 12, elevation: 3, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4 }}>
-          <Icon name="navigate-outline" size={24} color="#111418" />
-        </TouchableOpacity>
-        <TouchableOpacity style={{ position: 'absolute', bottom: 20, alignSelf: 'center', backgroundColor: '#0c7ff2', borderRadius: 12, padding: 16, elevation: 3, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4 }}>
-          <Icon name="list" size={24} color="white" />
-        </TouchableOpacity>
+      </View>
+      <View style={{ flex: 1, paddingHorizontal: 16 }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', marginVertical: 16 }}>Barbieri Vicini</Text>
+        <FlatList
+          data={nearbyBarbers}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => <BarberListItem barber={item} />}
+        />
       </View>
       <BottomNavBar />
     </View>
