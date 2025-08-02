@@ -1,10 +1,10 @@
 import { Text, View, TextInput, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { useState, useEffect } from 'react';
-import Button from '../components/Button';
-import Icon from '../components/Icon';
-import MapWrapper from '../components/MapWrapper';
-import { commonStyles, buttonStyles, colors } from '../styles/commonStyles';
+import Button from '../../components/Button';
+import Icon from '../../components/Icon';
+import MapWrapper from '../../components/MapWrapper';
+import { commonStyles, buttonStyles, colors } from '../../styles/commonStyles';
 
 interface Barber {
   id: string;
