@@ -2,12 +2,27 @@ import { Text, View, TextInput, TouchableOpacity, ImageBackground } from 'react-
 import { router } from 'expo-router';
 import { useState } from 'react';
 import Button from '../../components/Button';
+import AlertMessage from '../../components/AlertMessage';
+import { useUser } from '../../context/UserContext';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const { login } = useUser();
 
   const handleLogin = () => {
+    if (!email || !password) {
+      setError('Per favore inserisci sia l\'email che la password per continuare.');
+      return;
+    }
+    setError('');
+    login({
+      nome: 'Stefano',
+      cognome: 'Guida',
+      email, 
+      isAuthenticated: true
+    }); // Assuming login function updates user context
     // Mock login logic
     console.log('Logging in with:', email, password);
     router.replace('/(protected)');
@@ -22,6 +37,7 @@ export default function LoginScreen() {
       />
       <View style={{ padding: 16 }}>
         <Text style={{ fontSize: 28, fontWeight: 'bold', textAlign: 'center', marginBottom: 24 }}>Bentornato</Text>
+        {error ? <AlertMessage message={error} type="error" /> : null}
         <TextInput
           placeholder="Email"
           style={{ backgroundColor: '#f0f2f5', borderRadius: 12, padding: 16, marginBottom: 16, fontSize: 16 }}
@@ -51,9 +67,7 @@ export default function LoginScreen() {
           </TouchableOpacity>
         </View>
         <TouchableOpacity onPress={() => router.push('/auth/signup')}>
-          <Text style={{ textAlign: 'center', marginTop: 24, fontWeight: 'bold' }}>
-            Non hai un account? Registrati
-          </Text>
+          <Text style={{ textAlign: 'center', marginTop: 24, fontWeight: 'bold' }}>Non hai un account? Registrati</Text>
         </TouchableOpacity>
       </View>
     </View>

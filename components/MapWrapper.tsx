@@ -54,9 +54,7 @@ export default function MapWrapper({ barbers, onMarkerPress }: MapWrapperProps) 
   if (!MapView || !Marker) {
     return (
       <View style={[commonStyles.mapContainer, commonStyles.center]}>
-        <Text style={commonStyles.text}>
-          Mappa non disponibile
-        </Text>
+        <Text style={commonStyles.text}>Mappa non disponibile</Text>
       </View>
     );
   }

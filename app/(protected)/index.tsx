@@ -1,18 +1,35 @@
-import { Text, View, TextInput, ScrollView, TouchableOpacity, FlatList } from 'react-native';
+import { View, FlatList } from 'react-native';
 import { useState, useEffect } from 'react';
-import Icon from '../../components/Icon';
+import HeaderSearchBar from '../../components/HeaderSearchBar';
+import FilterModal from '../../components/FilterModal';
 import MapWrapper from '../../components/MapWrapper';
 import BottomNavBar from '../../components/BottomNavBar';
 import BarberListItem from '../../components/BarberListItem';
 
-const mockBarbers = [
-  { id: '1', name: 'Barbiere Centrale', address: 'Via Roma 123, Milano', rating: 4.5, distance: 0.5, lat: 45.4642, lng: 9.1900 },
-  { id: '2', name: 'Style & Cut', address: 'Corso Buenos Aires 45, Milano', rating: 4.8, distance: 1.2, lat: 45.4781, lng: 9.2100 },
-  { id: '3', name: 'Gentleman Barber', address: 'Via Brera 78, Milano', rating: 4.2, distance: 2.5, lat: 45.4722, lng: 9.1856 },
-  { id: '4', name: 'The Barber Shop', address: 'Piazza Duomo 1, Milano', rating: 4.9, distance: 0.2, lat: 45.4646, lng: 9.1916 },
+interface Barber {
+  id: string;
+  name: string;
+  address: string;
+  rating: number;
+  distance: number;
+  latitude: number;
+  longitude: number;
+  phone?: string;
+  services: string[];
+}
+
+const mockBarbers: Barber[] = [
+  { id: '1', name: 'Barbiere Centrale', address: 'Via Roma 123, Milano', rating: 4.5, distance: 0, latitude: 45.4642, longitude: 9.1900, services: ['Taglio', 'Barba'] },
+  { id: '2', name: 'Style & Cut', address: 'Corso Buenos Aires 45, Milano', rating: 4.8, distance: 0, latitude: 45.4781, longitude: 9.2100, services: ['Taglio', 'Barba', 'Colore'] },
+  { id: '3', name: 'Gentleman Barber', address: 'Via Brera 78, Milano', rating: 4.2, distance: 0, latitude: 45.4722, longitude: 9.1856, services: ['Taglio', 'Barba'] },
+  { id: '4', name: 'The Barber Shop', address: 'Piazza Duomo 1, Milano', rating: 4.9, distance: 0, latitude: 45.4646, longitude: 9.1916, services: ['Taglio', 'Barba', 'Massaggio'] },
+  { id: '5', name: 'Barbiere Centrale', address: 'Via Roma 123, Milano', rating: 4.5, distance: 0, latitude: 45.4642, longitude: 9.1900, services: ['Taglio', 'Barba'] },
+  { id: '6', name: 'Style & Cut', address: 'Corso Buenos Aires 45, Milano', rating: 4.8, distance: 0, latitude: 45.4781, longitude: 9.2100, services: ['Taglio', 'Barba', 'Colore'] },
+  { id: '7', name: 'Gentleman Barber', address: 'Via Brera 78, Milano', rating: 4.2, distance: 0, latitude: 45.4722, longitude: 9.1856, services: ['Taglio', 'Barba'] },
+  { id: '8', name: 'The Barber Shop', address: 'Piazza Duomo 1, Milano', rating: 4.9, distance: 0, latitude: 45.4646, longitude: 9.1916, services: ['Taglio', 'Barba', 'Massaggio'] }
 ];
 
-const userLocation = { lat: 45.4642, lng: 9.1900 }; // Mock user location (Duomo di Milano)
+const userLocation = { latitude: 45.4642, longitude: 9.1900 }; // Mock user location (Duomo di Milano)
 
 const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
   const R = 6371; // Radius of the earth in km
@@ -28,53 +45,62 @@ const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => 
   return d;
 }
 
-const deg2rad = (deg: number) => {
-  return deg * (Math.PI / 180)
-}
-
+const deg2rad = (deg: number) => deg * (Math.PI / 180)
 
 export default function HomeScreen() {
-  const [nearbyBarbers, setNearbyBarbers] = useState<any[]>([]);
+  const [nearbyBarbers, setNearbyBarbers] = useState<Barber[]>([]);
+  const [filteredBarbers, setFilteredBarbers] = useState<Barber[]>(mockBarbers);
+  const [selectedBarber, setSelectedBarber] = useState<Barber | null>(null);
+  const [search, setSearch] = useState('');
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
 
   useEffect(() => {
     const barbersWithDistance = mockBarbers.map(barber => ({
       ...barber,
-      distance: getDistance(userLocation.lat, userLocation.lng, barber.lat, barber.lng)
+      distance: getDistance(userLocation.latitude, userLocation.longitude, barber.latitude, barber.longitude)
     }));
-    const filteredBarbers = barbersWithDistance.filter(barber => barber.distance <= 2);
-    setNearbyBarbers(filteredBarbers);
+    const filtered = barbersWithDistance.filter(barber => barber.distance <= 2);
+    setNearbyBarbers(filtered);
+    setFilteredBarbers(barbersWithDistance);
   }, []);
+
+  useEffect(() => {
+    const barbersWithDistance = mockBarbers.map(barber => ({
+      ...barber,
+      distance: getDistance(userLocation.latitude, userLocation.longitude, barber.latitude, barber.longitude)
+    }));
+    const filtered = barbersWithDistance.filter(barber =>
+      barber.name.toLowerCase().includes(search.toLowerCase()) ||
+      barber.address.toLowerCase().includes(search.toLowerCase()) ||
+      barber.services.some(service => service.toLowerCase().includes(search.toLowerCase()))
+    );
+    setFilteredBarbers(filtered);
+  }, [search]);
+
+  const handleMarkerPress = (barber: Barber) => {
+    setSelectedBarber(barber);
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
-      <View style={{ padding: 16 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#f0f2f5', borderRadius: 12, paddingHorizontal: 16 }}>
-          <Icon name="search" size={24} color="#60758a" />
-          <TextInput
-            placeholder="Barberia, indirizzo o servizio"
-            style={{ flex: 1, height: 48, marginLeft: 8, fontSize: 16 }}
-          />
-        </View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 16 }}>
-          <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#f0f2f5', borderRadius: 12, paddingVertical: 8, paddingHorizontal: 12, marginRight: 8 }}>
-            <Text style={{ fontSize: 14, fontWeight: '500' }}>Orario di apertura</Text>
-            <Icon name="chevron-down" size={20} color="#111418" style={{ marginLeft: 4 }} />
-          </TouchableOpacity>
-          <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#f0f2f5', borderRadius: 12, paddingVertical: 8, paddingHorizontal: 12, marginRight: 8 }}>
-            <Text style={{ fontSize: 14, fontWeight: '500' }}>Recensioni</Text>
-            <Icon name="chevron-down" size={20} color="#111418" style={{ marginLeft: 4 }} />
-          </TouchableOpacity>
-          <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#f0f2f5', borderRadius: 12, paddingVertical: 8, paddingHorizontal: 12 }}>
-            <Text style={{ fontSize: 14, fontWeight: '500' }}>Servizi</Text>
-            <Icon name="chevron-down" size={20} color="#111418" style={{ marginLeft: 4 }} />
-          </TouchableOpacity>
-        </ScrollView>
+      <View style={{ paddingTop: 36, paddingLeft: 16, paddingRight: 16, backgroundColor: 'white', borderBottomWidth: 1, borderBottomColor: '#e0e0e0' }}>
+        <HeaderSearchBar
+          search={search}
+          setSearch={setSearch}
+          onFilterPress={() => setFilterModalVisible(true)}
+        />
+        <FilterModal
+          visible={filterModalVisible}
+          onClose={() => setFilterModalVisible(false)}
+        />
       </View>
       <View style={{ flex: 1 }}>
-        <MapWrapper />
+        <MapWrapper 
+          barbers={filteredBarbers}
+          onMarkerPress={handleMarkerPress}
+        />
       </View>
-      <View style={{ flex: 1, paddingHorizontal: 16 }}>
-        <Text style={{ fontSize: 20, fontWeight: 'bold', marginVertical: 16 }}>Barbieri Vicini</Text>
+      <View style={{ flex: 1, paddingHorizontal: 16, marginTop: 40 }}>
         <FlatList
           data={nearbyBarbers}
           keyExtractor={(item) => item.id}

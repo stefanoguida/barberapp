@@ -3,6 +3,12 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useState, useEffect } from 'react';
 import Icon from '../../../components/Icon';
 import Button from '../../../components/Button';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import StaffList from '../../../components/StaffList';
+import ServiceList from '../../../components/ServiceList';
+import CalendarSelector from '../../../components/CalendarSelector';
+import TimeSlots from '../../../components/TimeSlots';
+import ReviewsList from '../../../components/ReviewsList';
 
 const mockReviews = [
   {
@@ -26,7 +32,10 @@ const mockReviews = [
 export default function BarberDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [selectedStaff, setSelectedStaff] = useState<any>(null);
+
   // Mock data, in a real app this would be fetched from an API
   const barber = {
     id: '1',
@@ -38,19 +47,42 @@ export default function BarberDetailScreen() {
     reviewsCount: 125,
     reviews: mockReviews,
     staff: [
-      { id: '1', name: 'Luca', role: 'Senior Barber', avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB5YwfgeCjVmZPDZy2cRQL1K1l9EzRD3NgaaJe3XIgYyAZFru3lzWaxftK2HwM-8-CxyMWOMAspGis4WIeyXUJi3InfoeZgsyEHOxSlJI2lWlK_fn-ANJkXw6XuAW4vhM1itx-EklXKCKdkQUOYWkY5CAZr7JbH-gA4n8Cex30uCf-SESojTbI8dbBjWBwT2ncw41z26-uOgmwt16Ha0Srvc_IpAaCpKOGeNeBSg8dIktgD8N1ECSkoToHop7-zOzmEVQG7x9h5clo' },
-      { id: '2', name: 'Matteo', role: 'Barber', avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD02do0HS0vZQlwgkSfoVrzaYcqj_JQw2HhbJiDzjQDl642GQVDXVXNr7jOVbFq0DTF1WdwyRQaQkGiKzJsJgtu_Prgt9dhNkImXTVpEmEz1vP-4ileR6g2VYcrk1zcCociUVnXzK0VIc1V81OlBssMH1KiLB1smbU0LxoPMhx6Ed_-n1AMt4OgQspjkopI8tnBFBhtq-yVzPQDzBiza2A61kEe6NmhkfRpofr2kJB7_pnLVdDqPNugDh9ntFzBIE5YmQv3JUywY28' },
-      { id: '3', name: 'Davide', role: 'Barber', avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCxruvKP8XhKwds8ZCNK7O8O6yodCzS7qTGH-YWnfMtmj37k0XIHPJUhEe8uGgl0pnxdPgqlbfsAQZS2hWZxE4n1UnW7h3vBedW-wvpZP8u0XR4reUylDw26U1BcmllgFbPhFllpA8N9XabOh2-MLGaT9W4QbjeNmPJzaQVK_L2izb-ry3yNIlhCh4sMVzFUPOWvnNTdueXmcBF36cZthtPQtlZFieGdHZWjYFFdwWL4FE0rsXNQO-fxK9pZ0KvFxyiSqWLkMBuY6E' },
+      { id: '1', name: 'Luca', services: ['Haircut', 'Beard Trim', 'Hot Towel Shave'], role: 'Senior Barber', avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB5YwfgeCjVmZPDZy2cRQL1K1l9EzRD3NgaaJe3XIgYyAZFru3lzWaxftK2HwM-8-CxyMWOMAspGis4WIeyXUJi3InfoeZgsyEHOxSlJI2lWlK_fn-ANJkXw6XuAW4vhM1itx-EklXKCKdkQUOYWkY5CAZr7JbH-gA4n8Cex30uCf-SESojTbI8dbBjWBwT2ncw41z26-uOgmwt16Ha0Srvc_IpAaCpKOGeNeBSg8dIktgD8N1ECSkoToHop7-zOzmEVQG7x9h5clo' },
+      { id: '2', name: 'Matteo', services: ['Haircut'], role: 'Barber', avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD02do0HS0vZQlwgkSfoVrzaYcqj_JQw2HhbJiDzjQDl642GQVDXVXNr7jOVbFq0DTF1WdwyRQaQkGiKzJsJgtu_Prgt9dhNkImXTVpEmEz1vP-4ileR6g2VYcrk1zcCociUVnXzK0VIc1V81OlBssMH1KiLB1smbU0LxoPMhx6Ed_-n1AMt4OgQspjkopI8tnBFBhtq-yVzPQDzBiza2A61kEe6NmhkfRpofr2kJB7_pnLVdDqPNugDh9ntFzBIE5YmQv3JUywY28' },
+      { id: '3', name: 'Davide', services: ['Beard Trim'], role: 'Barber', avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCxruvKP8XhKwds8ZCNK7O8O6yodCzS7qTGH-YWnfMtmj37k0XIHPJUhEe8uGgl0pnxdPgqlbfsAQZS2hWZxE4n1UnW7h3vBedW-wvpZP8u0XR4reUylDw26U1BcmllgFbPhFllpA8N9XabOh2-MLGaT9W4QbjeNmPJzaQVK_L2izb-ry3yNIlhCh4sMVzFUPOWvnNTdueXmcBF36cZthtPQtlZFieGdHZWjYFFdwWL4FE0rsXNQO-fxK9pZ0KvFxyiSqWLkMBuY6E' },
+      { id: '4', name: 'Pasquale', services: ['Haircut', 'Beard Trim', 'Hot Towel Shave'], role: 'Senior Barber', avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB5YwfgeCjVmZPDZy2cRQL1K1l9EzRD3NgaaJe3XIgYyAZFru3lzWaxftK2HwM-8-CxyMWOMAspGis4WIeyXUJi3InfoeZgsyEHOxSlJI2lWlK_fn-ANJkXw6XuAW4vhM1itx-EklXKCKdkQUOYWkY5CAZr7JbH-gA4n8Cex30uCf-SESojTbI8dbBjWBwT2ncw41z26-uOgmwt16Ha0Srvc_IpAaCpKOGeNeBSg8dIktgD8N1ECSkoToHop7-zOzmEVQG7x9h5clo' },
+      { id: '5', name: 'Antonio',  services: ['Hot Towel Shave'], role: 'Barber', avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD02do0HS0vZQlwgkSfoVrzaYcqj_JQw2HhbJiDzjQDl642GQVDXVXNr7jOVbFq0DTF1WdwyRQaQkGiKzJsJgtu_Prgt9dhNkImXTVpEmEz1vP-4ileR6g2VYcrk1zcCociUVnXzK0VIc1V81OlBssMH1KiLB1smbU0LxoPMhx6Ed_-n1AMt4OgQspjkopI8tnBFBhtq-yVzPQDzBiza2A61kEe6NmhkfRpofr2kJB7_pnLVdDqPNugDh9ntFzBIE5YmQv3JUywY28' },
+      { id: '6', name: 'Ciro', services: ['Beard Trim', 'Hot Towel Shave'], role: 'Barber', avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCxruvKP8XhKwds8ZCNK7O8O6yodCzS7qTGH-YWnfMtmj37k0XIHPJUhEe8uGgl0pnxdPgqlbfsAQZS2hWZxE4n1UnW7h3vBedW-wvpZP8u0XR4reUylDw26U1BcmllgFbPhFllpA8N9XabOh2-MLGaT9W4QbjeNmPJzaQVK_L2izb-ry3yNIlhCh4sMVzFUPOWvnNTdueXmcBF36cZthtPQtlZFieGdHZWjYFFdwWL4FE0rsXNQO-fxK9pZ0KvFxyiSqWLkMBuY6E' },
     ],
     coverImage: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA-rbZOXyL1lMOqktrNJUObpb1KHo7zxClcgXI5irjojrElb7h4csAttUGbq5jb5bfXt_CNqY1O1tSORIDIsaMjXWDMqyYJY2jR35bv73FyP3ZIZ94uuzY9KKqaYbct8eu8bDAsJEHM-YTLHhFkRD998OxtfsZ8fh8OZw8kRF6tcMs9SGfSDAmY9-9TuTTbjDbhK6GrpztFFEXvHQ7CPm94gvId1jRj3IiH96DccFjEfJggeta0mmbde5FOM9plURj_RFJ68iFDhOI',
   };
 
-  const handleBookNow = () => {
-    if (selectedService && selectedTime) {
-      router.push({
-        pathname: `/booking/${id}/${barber.staff[0].id}`,
-        params: { service: selectedService, time: selectedTime, date: new Date().toISOString().split('T')[0] },
-      });
+  const handleBookNow = async () => {
+    if (selectedService && selectedStaff && selectedTime) {
+      const newBooking = {
+        id: Date.now().toString(),
+        barberId: barber.id,
+        staffId: selectedStaff.id,
+        staffName: selectedStaff.name,
+        barberName: barber.name,
+        date: selectedDate.toISOString().split('T')[0],
+        time: selectedTime,
+        service: selectedService,
+        price: '', // puoi aggiungere il prezzo se disponibile
+        address: barber.address,
+        status: 'confirmed',
+      };
+
+      try {
+        const storedBookings = await AsyncStorage.getItem('bookings');
+        const bookings = storedBookings ? JSON.parse(storedBookings) : [];
+        bookings.push(newBooking);
+        await AsyncStorage.setItem('bookings', JSON.stringify(bookings));
+      } catch (error) {
+        console.error('Errore nel salvataggio della prenotazione:', error);
+      }
+
+      router.push('/(protected)/bookings');
     }
   };
 
@@ -62,6 +94,21 @@ export default function BarberDetailScreen() {
           style={{ height: 250, justifyContent: 'flex-end' }}
           resizeMode="cover"
         >
+          <TouchableOpacity 
+            onPress={() => router.back()}
+            style={{
+              position: 'absolute',
+              top: 10, // distanza dal bordo superiore (puoi regolare)
+              left: 10, // distanza dal bordo sinistro
+              zIndex: 10,
+              backgroundColor: 'rgba(0,0,0,0.4)',
+              borderRadius: 20,
+              padding: 6,
+              color: 'white'
+            }}
+          >
+            <Icon color='white' name="arrow-back" size={24} />
+          </TouchableOpacity>
           <View style={{ backgroundColor: 'rgba(0,0,0,0.4)', padding: 16 }}>
             <Text style={{ color: 'white', fontSize: 28, fontWeight: 'bold' }}>{barber.name}</Text>
           </View>
@@ -72,86 +119,20 @@ export default function BarberDetailScreen() {
           <Text style={{ fontSize: 16, marginBottom: 16 }}>{barber.openingTime}</Text>
 
           <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 8 }}>Services</Text>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
-            {barber.services.map((service) => (
-              <TouchableOpacity
-                key={service}
-                style={{
-                  backgroundColor: selectedService === service ? '#0c7ff2' : '#f0f2f5',
-                  borderRadius: 12,
-                  paddingVertical: 8,
-                  paddingHorizontal: 12,
-                }}
-                onPress={() => setSelectedService(service)}
-              >
-                <Text style={{ fontSize: 14, fontWeight: '500', color: selectedService === service ? 'white' : 'black' }}>{service}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <ServiceList services={barber.services} selectedService={selectedService} onSelectService={setSelectedService} />
 
-          {selectedService && (
+          <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 8 }}>Barbers</Text>
+          <StaffList staff={barber.staff.filter((s) => !selectedService ? true : s.services.includes(selectedService) )} selectedStaff={selectedStaff} onSelectStaff={setSelectedStaff} />
+
+          {selectedService && selectedStaff && (
             <View>
+              <CalendarSelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
               <Text style={{ fontSize: 20, fontWeight: 'bold', marginVertical: 16 }}>Available Times</Text>
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                {['10:00', '11:00', '12:00', '14:00', '15:00', '16:00'].map((time) => (
-                  <TouchableOpacity
-                    key={time}
-                    style={{
-                      backgroundColor: selectedTime === time ? '#0c7ff2' : '#f0f2f5',
-                      borderRadius: 12,
-                      paddingVertical: 8,
-                      paddingHorizontal: 12,
-                    }}
-                    onPress={() => setSelectedTime(time)}
-                  >
-                    <Text style={{ fontSize: 14, fontWeight: '500', color: selectedTime === time ? 'white' : 'black' }}>{time}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
+              <TimeSlots times={['10:00', '11:00', '12:00', '14:00', '15:00', '16:00']} selectedTime={selectedTime} onSelectTime={setSelectedTime} />
             </View>
           )}
 
-          <Text style={{ fontSize: 20, fontWeight: 'bold', marginVertical: 16 }}>Reviews</Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-            <Text style={{ fontSize: 36, fontWeight: '900', marginRight: 8 }}>{barber.rating}</Text>
-            <View>
-              <View style={{ flexDirection: 'row' }}>
-                {[...Array(5)].map((_, i) => (
-                  <Icon key={i} name={i < Math.round(barber.rating) ? "star" : "star-outline"} size={18} color="#111418" />
-                ))}
-              </View>
-              <Text style={{ fontSize: 16 }}>({barber.reviewsCount} reviews)</Text>
-            </View>
-          </View>
-
-          {barber.reviews.map((review) => (
-            <View key={review.id} style={{ marginBottom: 16 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                <Image source={{ uri: review.avatar }} style={{ width: 40, height: 40, borderRadius: 20, marginRight: 12 }} />
-                <View>
-                  <Text style={{ fontSize: 16, fontWeight: '600' }}>{review.author}</Text>
-                  <Text style={{ fontSize: 14, color: '#60758a' }}>{review.date}</Text>
-                </View>
-              </View>
-              <View style={{ flexDirection: 'row', marginBottom: 8 }}>
-                {[...Array(5)].map((_, i) => (
-                  <Icon key={i} name={i < review.rating ? "star" : "star-outline"} size={16} color="#111418" />
-                ))}
-              </View>
-              <Text style={{ fontSize: 16 }}>{review.text}</Text>
-            </View>
-          ))}
-
-          <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 8 }}>Barbers</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {barber.staff.map((staff) => (
-              <View key={staff.id} style={{ alignItems: 'center', marginRight: 16 }}>
-                <Image source={{ uri: staff.avatar }} style={{ width: 80, height: 80, borderRadius: 40, marginBottom: 8 }} />
-                <Text style={{ fontSize: 16, fontWeight: '600' }}>{staff.name}</Text>
-                <Text style={{ fontSize: 14, color: '#60758a' }}>{staff.role}</Text>
-              </View>
-            ))}
-          </ScrollView>
+          <ReviewsList reviews={barber.reviews} rating={barber.rating} reviewsCount={barber.reviewsCount} />
         </View>
       </ScrollView>
       <View style={{ padding: 16, borderTopWidth: 1, borderTopColor: '#f0f2f5' }}>

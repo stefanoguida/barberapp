@@ -42,6 +42,21 @@ export default function BookingScreen() {
           style={{ height: 250, justifyContent: 'flex-end' }}
           resizeMode="cover"
         >
+          <TouchableOpacity 
+            onPress={() => router.back()}
+            style={{
+              position: 'absolute',
+              top: 10, // distanza dal bordo superiore (puoi regolare)
+              left: 10, // distanza dal bordo sinistro
+              zIndex: 10,
+              backgroundColor: 'rgba(0,0,0,0.4)',
+              borderRadius: 20,
+              padding: 6,
+              color: 'white'
+            }}
+          >
+            <Icon color='white' name="arrow-back" size={24} />
+          </TouchableOpacity>
           <View style={{ backgroundColor: 'rgba(0,0,0,0.4)', padding: 16 }}>
             <Text style={{ color: 'white', fontSize: 28, fontWeight: 'bold' }}>{barber.name}</Text>
           </View>

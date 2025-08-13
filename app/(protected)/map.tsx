@@ -55,7 +55,6 @@ const mockBarbers: Barber[] = [
 ];
 
 export default function MapScreen() {
-  console.log('MapScreen rendered');
   const [searchText, setSearchText] = useState('');
   const [selectedBarber, setSelectedBarber] = useState<Barber | null>(null);
   const [filteredBarbers, setFilteredBarbers] = useState<Barber[]>(mockBarbers);
@@ -73,12 +72,10 @@ export default function MapScreen() {
   }, [searchText]);
 
   const handleMarkerPress = (barber: Barber) => {
-    console.log('Marker pressed:', barber.name);
     setSelectedBarber(barber);
   };
 
   const handleBarberSelect = (barber: Barber) => {
-    console.log('Barber selected:', barber.name);
     router.push(`/barber/${barber.id}`);
   };
 
@@ -131,9 +128,7 @@ export default function MapScreen() {
               
               <View style={[commonStyles.row, commonStyles.spaceBetween]}>
                 <Text style={commonStyles.textSecondary}>{barber.distance}</Text>
-                <Text style={[commonStyles.textSecondary, { color: colors.primary }]}>
-                  Tocca per dettagli
-                </Text>
+                <Text style={[commonStyles.textSecondary, { color: colors.primary }]}>Tocca per dettagli</Text>
               </View>
             </TouchableOpacity>
           ))}

@@ -40,6 +40,9 @@
     },
     "extra": {
       "router": {}
+    },
+    "packagerOpts": {
+      "hostType": "lan"
     }
   }
 }

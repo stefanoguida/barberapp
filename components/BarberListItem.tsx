@@ -19,7 +19,7 @@ export default function BarberListItem({ barber }: BarberListItemProps) {
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 16,
+        padding: 10,
         borderRadius: 12,
         backgroundColor: '#f0f2f5',
         marginBottom: 12,
@@ -28,10 +28,10 @@ export default function BarberListItem({ barber }: BarberListItemProps) {
     >
       <View style={{ flex: 1 }}>
         <Text style={{ fontSize: 16, fontWeight: '600' }}>{barber.name}</Text>
-        <Text style={{ fontSize: 14, color: '#60758a', marginVertical: 4 }}>{barber.address}</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Icon name="star" size={16} color={colors.warning} />
-          <Text style={{ marginLeft: 4, color: '#60758a' }}>{barber.rating}</Text>
+          <Text style={{ marginLeft: 4, color: '#60758a' }}>{barber.rating} </Text>
+          <Text style={{ fontSize: 14, color: '#60758a', marginVertical: 4 }}>{barber.address}</Text>
           <Text style={{ marginLeft: 8, color: '#60758a' }}>({barber.distance.toFixed(1)} km)</Text>
         </View>
       </View>

@@ -74,9 +74,7 @@ export default function SignupScreen() {
           onPress={handleSignup}
         />
         <TouchableOpacity onPress={() => router.push('/auth/login')}>
-          <Text style={{ textAlign: 'center', marginTop: 24, fontWeight: 'bold' }}>
-            Hai già un account? Accedi
-          </Text>
+          <Text style={{ textAlign: 'center', marginTop: 24, fontWeight: 'bold' }}>Hai già un account? Accedi</Text>
         </TouchableOpacity>
       </View>
     </View>

@@ -1,6 +1,8 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import Icon from './Icon';
 import { colors } from '../styles/commonStyles';
+import { Swipeable } from 'react-native-gesture-handler';
+import { useEffect, useRef } from 'react';
 
 interface AppointmentDetailProps {
   booking: {
@@ -11,46 +13,52 @@ interface AppointmentDetailProps {
     time: string;
     address: string;
   };
-  onModify: () => void;
   onCancel: () => void;
 }
 
-export default function AppointmentDetail({ booking, onModify, onCancel }: AppointmentDetailProps) {
+export default function AppointmentDetail({ booking, onCancel }: AppointmentDetailProps) {
+  const swipeableRef = useRef<Swipeable>(null);
+
+  const renderRightActions = () => (
+    <TouchableOpacity
+      style={{
+        backgroundColor: colors.primary,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 100,
+        height: '100%',
+        borderTopRightRadius: 12,
+        borderBottomRightRadius: 12,
+        // opacity: isOpen ? 1 : 0,
+      }}
+      onPress={onCancel}
+      // disabled={!isOpen}
+    >
+      {/* <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Cancella</Text> */}
+      <Icon name="trash" size={24} color="white" />
+    </TouchableOpacity>
+  );
+
   return (
-    <View style={{ padding: 16 }}>
-      <Text style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 16 }}>{booking.date}</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-        <View style={{ backgroundColor: '#f0f2f5', borderRadius: 12, padding: 12, marginRight: 16 }}>
-          <Icon name="cut" size={24} color="#111418" />
-        </View>
-        <View>
-          <Text style={{ fontSize: 16, fontWeight: '600' }}>{booking.service}</Text>
-          <Text style={{ fontSize: 14, color: '#60758a' }}>{booking.time}</Text>
+    <Swipeable
+      ref={swipeableRef}
+      renderRightActions={renderRightActions}
+      rightThreshold={10}
+      friction={1}
+    >
+      <View style={{ padding: 16, backgroundColor: colors.card || '#f0f2f5', borderRadius: 12, marginBottom: 12 }}>
+        <Text style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 16 }}>{booking.date}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+          <View style={{ backgroundColor: '#f0f2f5', borderRadius: 12, padding: 12, marginRight: 16 }}>
+            <Icon name="calendar" size={24} color="#111418" />
+          </View>
+          <View>
+            <Text style={{ fontSize: 16, fontWeight: '600' }}>{booking.barberName} - {booking.service}</Text>
+            <Text style={{ fontSize: 14, color: '#60758a' }}>{booking.time}</Text>
+            <Text style={{ fontSize: 14, color: '#60758a' }}>{booking.address}</Text>
+          </View>
         </View>
       </View>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-        <View style={{ backgroundColor: '#f0f2f5', borderRadius: 12, padding: 12, marginRight: 16 }}>
-          <Icon name="person" size={24} color="#111418" />
-        </View>
-        <View>
-          <Text style={{ fontSize: 16, fontWeight: '600' }}>{booking.barberName}</Text>
-          <Text style={{ fontSize: 14, color: '#60758a' }}>{booking.address}</Text>
-        </View>
-      </View>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <TouchableOpacity
-          style={{ backgroundColor: '#f0f2f5', borderRadius: 12, paddingVertical: 12, paddingHorizontal: 24 }}
-          onPress={onModify}
-        >
-          <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#111418' }}>Modifica</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{ backgroundColor: '#0c7ff2', borderRadius: 12, paddingVertical: 12, paddingHorizontal: 24 }}
-          onPress={onCancel}
-        >
-          <Text style={{ fontSize: 14, fontWeight: 'bold', color: 'white' }}>Cancella</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    </Swipeable>
   );
 }

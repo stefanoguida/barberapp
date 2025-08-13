@@ -2,10 +2,11 @@ import { Redirect, Stack, router } from 'expo-router';
 import { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import Icon from '../../components/Icon';
+import { useUser } from '../../context/UserContext';
 
 export default function ProtectedLayout() {
   // Mock authentication status and user role
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const { isAuthenticated, nome, cognome } = useUser();
   const [isBarber, setIsBarber] = useState(true);
 
   if (!isAuthenticated) {
@@ -17,15 +18,7 @@ export default function ProtectedLayout() {
       <Stack.Screen
         name="index"
         options={{
-          headerShown: true,
-          title: 'Home',
-          headerRight: () => (
-            isBarber && (
-              <TouchableOpacity onPress={() => router.push('/(protected)/barber/dashboard')}>
-                <Icon name="cog" size={24} style={{ marginRight: 16 }} />
-              </TouchableOpacity>
-            )
-          ),
+          headerShown: false, // Nasconde la barra superiore
         }}
       />
       <Stack.Screen name="barber/[id]" options={{ headerShown: false }} />

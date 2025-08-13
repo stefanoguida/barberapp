@@ -23,6 +23,7 @@ interface BookingData {
 export default function BookingsScreen() {
   const [bookings, setBookings] = useState<BookingData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [openId, setOpenId] = useState<string | null>(null);
 
   const loadBookings = async () => {
     try {
@@ -42,13 +43,6 @@ export default function BookingsScreen() {
       loadBookings();
     }, [])
   );
-
-  const handleModify = (booking: BookingData) => {
-    router.push({
-      pathname: `/(protected)/booking/${booking.barberId}/${booking.staffId}`,
-      params: { ...booking },
-    });
-  };
 
   const handleCancel = async (bookingId: string) => {
     Alert.alert(
@@ -88,7 +82,6 @@ export default function BookingsScreen() {
         renderItem={({ item }) => (
           <AppointmentDetail
             booking={item}
-            onModify={() => handleModify(item)}
             onCancel={() => handleCancel(item.id)}
           />
         )}
